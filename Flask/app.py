@@ -23,8 +23,8 @@ df = df[df['rate'] != '-']
 df['rate'] = df['rate'].str.replace('/5', '')
 df['rate'] = df['rate'].astype(float)
 
-# 🔥 reduce size early
-df = df.sample(5000).reset_index(drop=True)
+# Consistent sampling
+df = df.sample(5000, random_state=42).reset_index(drop=True)
 
 # ---------- TEXT CLEAN ----------
 df['reviews_list'] = df['reviews_list'].str.lower()
@@ -46,16 +46,18 @@ indices = pd.Series(df.index, index=df['name']).drop_duplicates()
 
 # ---------- FUNCTION ----------
 def recommend_model(name):
-    name = name.lower().strip()
+    if not name or not name.strip():
+        return [{"name": "No restaurant found", "rate": "", "cuisines": ""}]
 
-    matches = [i for i in indices.index if name in i.lower()]
+    name = name.strip()
 
-    if len(matches) == 0:
-        return ["No restaurant found"]
+    matches = df[df['name'].str.contains(name, case=False, na=False)]
 
-    idx = indices[matches[0]]
+    if matches.empty:
+        return [{"name": "No restaurant found", "rate": "", "cuisines": ""}]
 
-    # ✅ FIX HERE
+    idx = matches.index[0]
+
     sim_scores = list(enumerate(cosine_sim[idx].flatten()))
 
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -64,15 +66,18 @@ def recommend_model(name):
 
     restaurant_indices = [i[0] for i in sim_scores]
 
-    # safe check
     restaurant_indices = [i for i in restaurant_indices if i < len(df)]
 
-    result = df['name'].iloc[restaurant_indices].tolist()
+    result = df.iloc[restaurant_indices][['name', 'rate', 'cuisines']].to_dict('records')
 
- # remove duplicates
-    result = list(dict.fromkeys(result))
+    seen_names = set()
+    unique_result = []
+    for restaurant in result:
+        if restaurant['name'] not in seen_names:
+            seen_names.add(restaurant['name'])
+            unique_result.append(restaurant)
 
-    return result
+    return unique_result
 
 # ---------- FLASK ----------
 @app.route('/')
@@ -82,10 +87,10 @@ def home():
 @app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
     if request.method == 'POST':
-        name = request.form['restaurant']
+        name = request.form.get('restaurant', '')
         result = recommend_model(name)
         return render_template('result.html', restaurants=result)
-    
+
     return render_template('index.html')
 
 if __name__ == '__main__':

@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommended Restaurants</title>
+    <title>Restaurant Recommendations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-text: #1a1a1a;
+            --secondary-text: #757575;
+            --accent: #111111;
+            --bg-body: #ffffff;
+            --border-light: #eeeeee;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,279 +23,206 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--primary-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
         }
 
-        .logo {
-            font-size: 48px;
-            margin-bottom: 10px;
+        .back-link {
+            text-decoration: none;
+            color: var(--primary-text);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
         }
 
-        h1 {
-            color: white;
+        .back-link:hover {
+            opacity: 0.5;
+        }
+
+        .page-title {
+            text-align: left;
+            margin-bottom: 60px;
+        }
+
+        .page-title h1 {
             font-size: 36px;
             font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
         }
 
-        .subtitle {
-            color: rgba(255, 255, 255, 0.9);
+        .page-title p {
+            color: var(--secondary-text);
             font-size: 16px;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .restaurant-item {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .restaurant-item:first-child {
+            border-top: 1px solid var(--border-light);
+        }
+
+        .restaurant-item:hover {
+            padding-left: 10px;
+        }
+
+        .restaurant-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .restro-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .restro-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-text);
+            letter-spacing: -0.02em;
+        }
+
+        .restro-meta {
+            font-size: 14px;
+            color: var(--secondary-text);
             font-weight: 400;
         }
 
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 30px;
-            padding: 12px 30px;
-            background: white;
-            color: #e23744;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .back-btn:hover {
-            background: #e23744;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(226, 55, 68, 0.4);
-        }
-
-        .back-btn::before {
-            content: "← ";
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .restaurant-card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .restaurant-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, #e23744 0%, #ff6b6b 100%);
-        }
-
-        .restaurant-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-number {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #e23744 0%, #d62d3a 100%);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 32px;
+        .restro-rating {
+            font-size: 20px;
             font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .restaurant-name {
-            color: #333;
-            font-size: 18px;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
-
-        .restaurant-meta {
+            color: var(--accent);
             display: flex;
             align-items: center;
-            gap: 15px;
-            color: #888;
-            font-size: 13px;
+            gap: 6px;
         }
 
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .rating {
-            color: #ffc107;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .no-results-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-
-        .no-results h2 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .no-results p {
-            color: #777;
-            font-size: 16px;
-            margin-bottom: 25px;
-        }
-
-        .no-results .back-btn {
-            margin-bottom: 0;
-        }
-
-        .stats-bar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 15px 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-            color: white;
-        }
-
-        .stat-number {
-            font-size: 28px;
+        .rating-label {
+            font-size: 10px;
             font-weight: 700;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
+            color: var(--secondary-text);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
+            margin-right: 4px;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 28px;
-            }
+        .status-message {
+            text-align: center;
+            padding: 100px 0;
+        }
 
-            .results-grid {
-                grid-template-columns: 1fr;
-            }
+        .status-message h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
 
-            .stats-bar {
-                gap: 20px;
-            }
+        .btn-retry {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 14px 40px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+        }
 
-            .stat-number {
-                font-size: 22px;
-            }
+        @media (max-width: 600px) {
+            .page-title h1 { font-size: 28px; }
+            .restro-name { font-size: 20px; }
+            .restro-rating { font-size: 18px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">🍽️</div>
-            <h1>Recommended Restaurants</h1>
-            <p class="subtitle">Based on your search, here are similar restaurants you might love</p>
-        </div>
 
-        <div style="text-align: center;">
-            <a href="/" class="back-btn">Back to Search</a>
-        </div>
+    <div class="container">
+        <header class="nav-header">
+            <a href="/" class="back-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                SEARCH
+            </a>
+            <div style="font-weight: 800; letter-spacing: 0.2em; font-size: 11px;">TASTEMAKER</div>
+            <div style="width: 60px;"></div>
+        </header>
+
+        <section class="page-title">
+            <h1>Recommended Dining</h1>
+            <p>Your curated selection of top-rated venues</p>
+        </section>
 
         {% if restaurants %}
-            {% if restaurants[0] == "No restaurant found" %}
-                <div class="no-results">
-                    <div class="no-results-icon">🔍</div>
-                    <h2>No Restaurants Found</h2>
-                    <p>We couldn't find any restaurants matching your search. Try a different name!</p>
-                    <a href="/" class="back-btn">Try Again</a>
+            {% if restaurants[0].name == "No restaurant found" %}
+                <div class="status-message">
+                    <h2>Record Not Found</h2>
+                    <p>We couldn't locate a match for your inquiry.</p>
+                    <a href="/" class="btn-retry">RETRY SEARCH</a>
                 </div>
             {% else %}
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <span class="stat-number">{{ restaurants|length }}</span>
-                        <span class="stat-label">Recommendations</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">🎯</span>
-                        <span class="stat-label">Personalized</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">⭐</span>
-                        <span class="stat-label">Top Rated</span>
-                    </div>
-                </div>
-
-                <div class="results-grid">
+                <div class="results-list">
                     {% for restaurant in restaurants %}
-                        <div class="restaurant-card">
-                            <div class="card-number">{{ loop.index }}</div>
-                            <h3 class="restaurant-name">{{ restaurant }}</h3>
-                            <div class="restaurant-meta">
-                                <span class="meta-item">
-                                    <span class="rating">★</span>
-                                    <span>Recommended</span>
-                                </span>
-                                <span class="meta-item">
-                                    <span>📍</span>
-                                    <span>Similar Taste</span>
-                                </span>
+                        <a href="#" class="restaurant-item">
+                            <div class="restaurant-info">
+                                <div class="restro-detail">
+                                    <h3 class="restro-name">{{ restaurant.name }}</h3>
+                                    <p class="restro-meta">{{ restaurant.cuisines }}</p>
+                                </div>
+                                <div class="restro-rating">
+                                    <span class="rating-label">Rating</span>
+                                    <span>{{ restaurant.rate }}</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
             {% endif %}
         {% else %}
-            <div class="no-results">
-                <div class="no-results-icon">🍽️</div>
-                <h2>No Results Yet</h2>
-                <p>Search for a restaurant to get personalized recommendations!</p>
-                <a href="/" class="back-btn">Start Searching</a>
+            <div class="status-message">
+                <h2>No Data Available</h2>
+                <p>Please initiate a search to view recommendations.</p>
             </div>
         {% endif %}
     </div>
+
 </body>
 </html>
