@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Restaurants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 12px 30px;
+            background: white;
+            color: #e23744;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: #e23744;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(226, 55, 68, 0.4);
+        }
+
+        .back-btn::before {
+            content: "← ";
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .restaurant-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .restaurant-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #e23744 0%, #ff6b6b 100%);
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #e23744 0%, #d62d3a 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .restaurant-name {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .restaurant-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating {
+            color: #ffc107;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .no-results-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .no-results h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .no-results p {
+            color: #777;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .no-results .back-btn {
+            margin-bottom: 0;
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🍽️</div>
+            <h1>Recommended Restaurants</h1>
+            <p class="subtitle">Based on your search, here are similar restaurants you might love</p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/" class="back-btn">Back to Search</a>
+        </div>
+
+        {% if restaurants %}
+            {% if restaurants[0] == "No restaurant found" %}
+                <div class="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <h2>No Restaurants Found</h2>
+                    <p>We couldn't find any restaurants matching your search. Try a different name!</p>
+                    <a href="/" class="back-btn">Try Again</a>
+                </div>
+            {% else %}
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ restaurants|length }}</span>
+                        <span class="stat-label">Recommendations</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">🎯</span>
+                        <span class="stat-label">Personalized</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">⭐</span>
+                        <span class="stat-label">Top Rated</span>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    {% for restaurant in restaurants %}
+                        <div class="restaurant-card">
+                            <div class="card-number">{{ loop.index }}</div>
+                            <h3 class="restaurant-name">{{ restaurant }}</h3>
+                            <div class="restaurant-meta">
+                                <span class="meta-item">
+                                    <span class="rating">★</span>
+                                    <span>Recommended</span>
+                                </span>
+                                <span class="meta-item">
+                                    <span>📍</span>
+                                    <span>Similar Taste</span>
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-results">
+                <div class="no-results-icon">🍽️</div>
+                <h2>No Results Yet</h2>
+                <p>Search for a restaurant to get personalized recommendations!</p>
+                <a href="/" class="back-btn">Start Searching</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Recommendation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.container {
+    position: relative;
+    background: 
+        linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)),
+        url('{{ url_for("static", filename="image.jpg") }}');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #e23744;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #7c7c7c;
+            font-size: 14px;
+            margin-bottom: 35px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus {
+            border-color: #e23744;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(226, 55, 68, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #b0b0b0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e23744 0%, #d62d3a 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #d62d3a 0%, #c42833 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(226, 55, 68, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #e23744;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🍽️</div>
+        <h1>Restaurant Recommendation</h1>
+        <p class="subtitle">Discover your next favorite dining spot</p>
+        
+        <form action="/recommend" method="post">
+            <div class="form-group">
+                <label for="restaurant">Restaurant Name</label>
+                <input 
+                    type="text" 
+                    id="restaurant" 
+                    name="restaurant" 
+                    placeholder="Enter a restaurant name..."
+                    required
+                    autocomplete="off"
+                >
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                Find Recommendations
+            </button>
+        </form>
+        
+        <div class="footer">
+            <p>Powered by AI • Find similar restaurants instantly</p>
+        </div>
+    </div>
+</body>
+</html>
