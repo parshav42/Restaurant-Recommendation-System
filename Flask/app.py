@@ -84,6 +84,7 @@ def recommend_model(name):
 def home():
     return render_template('index.html')
 
+
 @app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
     if request.method == 'POST':
@@ -91,7 +92,7 @@ def recommend():
         result = recommend_model(name)
         return render_template('result.html', restaurants=result)
 
-    return render_template('index.html')
+    return render_template('recommend.html')   # ✅ FIXED
 
 if __name__ == '__main__':
     app.run(debug=True)
