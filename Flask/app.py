@@ -4,29 +4,40 @@ csv.field_size_limit(sys.maxsize)
 
 import pandas as pd
 import string
-from flask import Flask, render_template, request
+import requests
+from flask import Flask, render_template, request, jsonify
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 app = Flask(__name__)
 
-# ---------- LOAD DATA ----------
+# LOAD DATA
 df = pd.read_csv("../Dataset/zomato.csv", engine='python', on_bad_lines='skip')
 
-# ---------- CLEAN ----------
-df.dropna(inplace=True)
+# FIX COST COLUMN
+if 'approx_cost(for two people)' in df.columns:
+    df['approx_cost(for two people)'] = df['approx_cost(for two people)'].astype(str)
+    df['approx_cost(for two people)'] = df['approx_cost(for two people)'].str.replace(',', '')
+    df['approx_cost(for two people)'] = pd.to_numeric(df['approx_cost(for two people)'], errors='coerce')
+
+    df.rename(columns={
+        'approx_cost(for two people)': 'cost'
+    }, inplace=True)
+
+# CLEAN
+df.dropna(subset=['name', 'rate', 'cuisines', 'reviews_list', 'location'], inplace=True)
 df.drop_duplicates(inplace=True)
 
 df = df[df['rate'] != 'NEW']
 df = df[df['rate'] != '-']
 
-df['rate'] = df['rate'].str.replace('/5', '')
-df['rate'] = df['rate'].astype(float)
+df['rate'] = df['rate'].str.replace('/5', '', regex=False)
+df['rate'] = pd.to_numeric(df['rate'], errors='coerce')
+df.dropna(subset=['rate'], inplace=True)
 
-# Consistent sampling
 df = df.sample(5000, random_state=42).reset_index(drop=True)
 
-# ---------- TEXT CLEAN ----------
+# TEXT CLEAN
 df['reviews_list'] = df['reviews_list'].str.lower()
 
 def remove_punctuation(text):
@@ -36,63 +47,103 @@ def remove_punctuation(text):
 
 df['reviews_list'] = df['reviews_list'].apply(remove_punctuation)
 
-# ---------- MODEL ----------
+# MODEL
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['reviews_list'])
-
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-indices = pd.Series(df.index, index=df['name']).drop_duplicates()
-
-# ---------- FUNCTION ----------
-def recommend_model(name):
-    if not name or not name.strip():
+# RECOMMEND FUNCTION
+def recommend_model(name, location):
+    if not name or not location:
         return [{"name": "No restaurant found", "rate": "", "cuisines": ""}]
 
-    name = name.strip()
+    # try filtering by location
+    df_loc = df[df['location'].str.contains(location, case=False, na=False)]
 
-    matches = df[df['name'].str.contains(name, case=False, na=False)]
+# 🔥 ADD THIS (IMPORTANT)
+    if df_loc.empty:
+        df_loc = df
+
+    if df_loc.empty:
+        return [{"name": "No restaurant found in this location", "rate": "", "cuisines": ""}]
+
+    matches = df_loc[df_loc['name'].str.contains(name, case=False, na=False)]
 
     if matches.empty:
         return [{"name": "No restaurant found", "rate": "", "cuisines": ""}]
 
     idx = matches.index[0]
 
-    sim_scores = list(enumerate(cosine_sim[idx].flatten()))
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[1:11]
 
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    indices = [i[0] for i in sim_scores]
 
-    sim_scores = sim_scores[1:11]
+    result = df.iloc[indices][['name', 'rate', 'cuisines', 'cost']].to_dict('records')
 
-    restaurant_indices = [i[0] for i in sim_scores]
+    # remove duplicates
+    seen = set()
+    final = []
+    for r in result:
+        if r['name'] not in seen:
+            seen.add(r['name'])
+            final.append(r)
 
-    restaurant_indices = [i for i in restaurant_indices if i < len(df)]
+    return final
 
-    result = df.iloc[restaurant_indices][['name', 'rate', 'cuisines']].to_dict('records')
+# AUTO LOCATION API
+@app.route('/get_location')
+def get_location():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
 
-    seen_names = set()
-    unique_result = []
-    for restaurant in result:
-        if restaurant['name'] not in seen_names:
-            seen_names.add(restaurant['name'])
-            unique_result.append(restaurant)
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
 
-    return unique_result
+        headers = {
+            "User-Agent": "restaurant-app"
+        }
 
-# ---------- FLASK ----------
+        res = requests.get(url, headers=headers, timeout=5)
+
+        if res.status_code != 200:
+            return jsonify({"location": ""})
+
+        data = res.json()
+
+        address = data.get('address', {})
+
+        location = (
+            address.get('suburb')
+            or address.get('city')
+            or address.get('town')
+            or address.get('village')
+            or ""
+        )
+
+        return jsonify({"location": location})
+
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"location": ""})
+
+# ROUTES
 @app.route('/')
 def home():
     return render_template('index.html')
 
-
 @app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
     if request.method == 'POST':
-        name = request.form.get('restaurant', '')
-        result = recommend_model(name)
+        name = request.form.get('restaurant')
+        location = request.form.get('location')
+
+        result = recommend_model(name, location)
+        print("RESULT:", result) 
+
         return render_template('result.html', restaurants=result)
 
-    return render_template('recommend.html')   # ✅ FIXED
+    return render_template('recommend.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,228 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Recommendations</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-text: #1a1a1a;
-            --secondary-text: #757575;
-            --accent: #111111;
-            --bg-body: #ffffff;
-            --border-light: #eeeeee;
-        }
+<meta charset="UTF-8">
+<title>Results</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f8fafc;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--primary-text);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
+/* NAVBAR */
+.navbar {
+    background: #0f172a;
+    color: white;
+    padding: 18px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;   /* 🔥 IMPORTANT */
+}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+.navbar h2 {
+    margin: 0;
+    font-size: 22px;
+}
 
-        .nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 60px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-light);
-        }
+.navbar a {
+    color: #cbd5f5;
+    margin-left: 25px;
+    text-decoration: none;
+    font-weight: 500;   /* 🔥 IMPORTANT */
+}
 
-        .back-link {
-            text-decoration: none;
-            color: var(--primary-text);
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-        }
+.navbar a:hover {
+    color: white;
+}
 
-        .back-link:hover {
-            opacity: 0.5;
-        }
+/* CONTAINER */
+.container {
+    padding: 40px;
+}
 
-        .page-title {
-            text-align: left;
-            margin-bottom: 60px;
-        }
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
 
-        .page-title h1 {
-            font-size: 36px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 8px;
-        }
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
 
-        .page-title p {
-            color: var(--secondary-text);
-            font-size: 16px;
-        }
+th {
+    background: #e5e7eb;
+}
 
-        .results-list {
-            display: flex;
-            flex-direction: column;
-        }
+/* TITLE */
+.title {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+</style>
 
-        .restaurant-item {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            padding: 32px 0;
-            border-bottom: 1px solid var(--border-light);
-            transition: all 0.3s ease;
-        }
-
-        .restaurant-item:first-child {
-            border-top: 1px solid var(--border-light);
-        }
-
-        .restaurant-item:hover {
-            padding-left: 10px;
-        }
-
-        .restaurant-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .restro-detail {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .restro-name {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary-text);
-            letter-spacing: -0.02em;
-        }
-
-        .restro-meta {
-            font-size: 14px;
-            color: var(--secondary-text);
-            font-weight: 400;
-        }
-
-        .restro-rating {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .rating-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--secondary-text);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-right: 4px;
-        }
-
-        .status-message {
-            text-align: center;
-            padding: 100px 0;
-        }
-
-        .status-message h2 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .btn-retry {
-            display: inline-block;
-            margin-top: 24px;
-            padding: 14px 40px;
-            background: var(--accent);
-            color: #fff;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            border-radius: 4px;
-        }
-
-        @media (max-width: 600px) {
-            .page-title h1 { font-size: 28px; }
-            .restro-name { font-size: 20px; }
-            .restro-rating { font-size: 18px; }
-        }
-    </style>
 </head>
+
 <body>
 
-    <div class="container">
-        <header class="nav-header">
-            <a href="/" class="back-link">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                SEARCH
-            </a>
-            <div style="font-weight: 800; letter-spacing: 0.2em; font-size: 11px;">TASTEMAKER</div>
-            <div style="width: 60px;"></div>
-        </header>
-
-        <section class="page-title">
-            <h1>Recommended Dining</h1>
-            <p>Your curated selection of top-rated venues</p>
-        </section>
-
-        {% if restaurants %}
-            {% if restaurants[0].name == "No restaurant found" %}
-                <div class="status-message">
-                    <h2>Record Not Found</h2>
-                    <p>We couldn't locate a match for your inquiry.</p>
-                    <a href="/" class="btn-retry">RETRY SEARCH</a>
-                </div>
-            {% else %}
-                <div class="results-list">
-                    {% for restaurant in restaurants %}
-                        <a href="#" class="restaurant-item">
-                            <div class="restaurant-info">
-                                <div class="restro-detail">
-                                    <h3 class="restro-name">{{ restaurant.name }}</h3>
-                                    <p class="restro-meta">{{ restaurant.cuisines }}</p>
-                                </div>
-                                <div class="restro-rating">
-                                    <span class="rating-label">Rating</span>
-                                    <span>{{ restaurant.rate }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% else %}
-            <div class="status-message">
-                <h2>No Data Available</h2>
-                <p>Please initiate a search to view recommendations.</p>
-            </div>
-        {% endif %}
+<div class="navbar">
+    <h2>Restaurant Recommendation System</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/recommend">Recommend</a>
     </div>
+</div>
+
+<div class="container">
+
+    <div class="title">Here is Recommended Restaurants</div>
+
+    {% if restaurants %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Cuisines</th>
+            <th>Rating</th>
+            <th>Cost</th>
+        </tr>
+
+        {% for restaurant in restaurants %}
+        <tr>
+            <td>{{ restaurant.name }}</td>
+            <td>{{ restaurant.cuisines }}</td>
+            <td>{{ restaurant.rate }}</td>
+            <td>₹{{ restaurant.cost }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No results found</p>
+    {% endif %}
+
+</div>
 
 </body>
 </html>
