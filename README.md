@@ -47,5 +47,8 @@ The system uses:
    ![Recommendation](output_screenshots/recommendation_page.png)
    ### Ratings Page
    ![Ratings](output_screenshots/result_page.png)
+   ### terminal output
+![terminal](output_screenshots/terminal_page.png)
+
 
 
