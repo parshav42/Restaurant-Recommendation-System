@@ -22,7 +22,6 @@ The system uses:
 -  Get similar restaurant recommendations
 -  View ratings and cuisines
 -  View approximate cost for two people
--  (Optional) Location-based filtering
 -  Simple and clean web interface using Flask
 
 ---
